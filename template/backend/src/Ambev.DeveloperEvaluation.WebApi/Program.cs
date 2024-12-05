@@ -3,8 +3,10 @@ using Ambev.DeveloperEvaluation.Common.HealthChecks;
 using Ambev.DeveloperEvaluation.Common.Logging;
 using Ambev.DeveloperEvaluation.Common.Security;
 using Ambev.DeveloperEvaluation.Common.Validation;
+using Ambev.DeveloperEvaluation.Domain.Repositories;
 using Ambev.DeveloperEvaluation.IoC;
 using Ambev.DeveloperEvaluation.ORM;
+using Ambev.DeveloperEvaluation.ORM.Repositories;
 using Ambev.DeveloperEvaluation.WebApi.Middleware;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -42,7 +44,7 @@ public class Program
 
             builder.Services.AddAutoMapper(typeof(Program).Assembly, typeof(ApplicationLayer).Assembly);
 
-            builder.Services.AddMediatR(cfg =>
+			builder.Services.AddMediatR(cfg =>
             {
                 cfg.RegisterServicesFromAssemblies(
                     typeof(ApplicationLayer).Assembly,
@@ -52,7 +54,10 @@ public class Program
 
             builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
 
-            var app = builder.Build();
+			builder.Services.AddTransient<ISaleRepository, SaleRepository>();
+			builder.Services.AddTransient<IProductRepository, ProductRepository>();
+
+			var app = builder.Build();
             app.UseMiddleware<ValidationExceptionMiddleware>();
 
             if (app.Environment.IsDevelopment())

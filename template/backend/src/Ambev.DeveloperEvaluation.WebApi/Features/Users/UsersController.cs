@@ -49,16 +49,23 @@ public class UsersController : BaseController
         if (!validationResult.IsValid)
             return BadRequest(validationResult.Errors);
 
-        var command = _mapper.Map<CreateUserCommand>(request);
-        var response = await _mediator.Send(command, cancellationToken);
-
-        return Created(string.Empty, new ApiResponseWithData<CreateUserResponse>
+        try
         {
-            Success = true,
-            Message = "User created successfully",
-            Data = _mapper.Map<CreateUserResponse>(response)
-        });
-    }
+            var command = _mapper.Map<CreateUserCommand>(request);
+            var response = await _mediator.Send(command, cancellationToken);
+
+            return Created(string.Empty, new ApiResponseWithData<CreateUserResponse>
+            {
+                Success = true,
+                Message = "User created successfully",
+                Data = _mapper.Map<CreateUserResponse>(response)
+            });
+        }
+		catch (Exception ex)
+		{
+			return StatusCode(500, new { Success = false, Message = "An error occurred while creating the user", Error = ex.Message });
+		}
+	}
 
     /// <summary>
     /// Retrieves a user by their ID
