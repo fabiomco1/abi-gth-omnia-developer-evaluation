@@ -2,12 +2,15 @@
 using Microsoft.AspNetCore.Mvc;
 using AutoMapper;
 using Ambev.DeveloperEvaluation.WebApi.Common;
+using Ambev.DeveloperEvaluation.Domain.Repositories;
 using Ambev.DeveloperEvaluation.WebApi.Features.Sales.CreateSale;
 using Ambev.DeveloperEvaluation.WebApi.Features.Sales.GetSale;
 using Ambev.DeveloperEvaluation.WebApi.Features.Sales.CancelSale;
 using Ambev.DeveloperEvaluation.Application.Sales.CreateSale;
 using Ambev.DeveloperEvaluation.Application.Sales.GetSale;
 using Ambev.DeveloperEvaluation.Application.Sales.CancelSale;
+using Ambev.DeveloperEvaluation.Application.Products.CreateProduct;
+using Bogus;
 
 namespace Ambev.DeveloperEvaluation.WebApi.Features.Sales;
 
@@ -17,9 +20,11 @@ public class SalesController : BaseController
 {
 	private readonly IMediator _mediator;
 	private readonly IMapper _mapper;
+	private readonly IUserRepository _userRepository;
 
-	public SalesController(IMediator mediator, IMapper mapper)
+	public SalesController(IMediator mediator, IMapper mapper, IUserRepository userRepository)
 	{
+		_userRepository = userRepository;
 		_mediator = mediator;
 		_mapper = mapper;
 	}
@@ -99,5 +104,39 @@ public class SalesController : BaseController
 			Message = "Sale Cancelled successfully",
 			Data = _mapper.Map<CancelSaleResponse>(response)
 		});
+	}
+
+	[HttpPost("CreateSaleTest")]
+	[ProducesResponseType(typeof(ApiResponseWithData<CreateSaleResponse>), StatusCodes.Status201Created)]
+	[ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
+	public async Task<IActionResult> CreateFakeSale(CancellationToken cancellationToken)
+	{
+		try
+		{
+			var userNames = await _userRepository.GetAllUserAsync(cancellationToken);
+
+
+			var bogusfake = new Faker<CreateSaleRequest>()
+				.RuleFor(u => u.SaleNumber, f => f.Commerce.Ean8())
+				.RuleFor(u => u.SaleDate, f => DateTime.UtcNow)
+				.RuleFor(u => u.Customer, f => userNames[f.Random.Int(0, userNames.Count - 1)])
+				.RuleFor(u => u.Category, f => f.Commerce.Categories(1).FirstOrDefault())
+				.RuleFor(u => u.Image, f => "image.jpg");
+
+			var request = bogusfake.Generate();
+			var command = _mapper.Map<CreateProductCommand>(request);
+			var response = await _mediator.Send(command, cancellationToken);
+
+			return Created(string.Empty, new ApiResponseWithData<CreateProductResponse>
+			{
+				Success = true,
+				Message = "Product created successfully",
+				Data = _mapper.Map<CreateProductResponse>(response)
+			});
+		}
+		catch (Exception ex)
+		{
+			return StatusCode(500, new { Success = false, Message = "An error occurred while creating the Product", Error = ex.Message });
+		}
 	}
 }
