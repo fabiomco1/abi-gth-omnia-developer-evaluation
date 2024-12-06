@@ -9,8 +9,10 @@ using Ambev.DeveloperEvaluation.WebApi.Features.Sales.CancelSale;
 using Ambev.DeveloperEvaluation.Application.Sales.CreateSale;
 using Ambev.DeveloperEvaluation.Application.Sales.GetSale;
 using Ambev.DeveloperEvaluation.Application.Sales.CancelSale;
+using Ambev.DeveloperEvaluation.WebApi.Features.SalesProducts.CreateSaleProduct;
 using Ambev.DeveloperEvaluation.Application.Products.CreateProduct;
 using Bogus;
+using Ambev.DeveloperEvaluation.Application.Users.CreateUser;
 
 namespace Ambev.DeveloperEvaluation.WebApi.Features.Sales;
 
@@ -21,10 +23,12 @@ public class SalesController : BaseController
 	private readonly IMediator _mediator;
 	private readonly IMapper _mapper;
 	private readonly IUserRepository _userRepository;
+	private readonly IProductRepository _productRepository;
 
-	public SalesController(IMediator mediator, IMapper mapper, IUserRepository userRepository)
+	public SalesController(IMediator mediator, IMapper mapper, IUserRepository userRepository, IProductRepository productRepository)
 	{
 		_userRepository = userRepository;
+		_productRepository = productRepository;
 		_mediator = mediator;
 		_mapper = mapper;
 	}
@@ -115,23 +119,32 @@ public class SalesController : BaseController
 		{
 			var userNames = await _userRepository.GetAllUserAsync(cancellationToken);
 
+			var productsId = await _productRepository.GetAllProductsAsync(cancellationToken);
 
-			var bogusfake = new Faker<CreateSaleRequest>()
+			var bogusfakeproduct = new Faker<CreateSaleProductRequest>()
+				.RuleFor(p => p.ProductId, f => productsId[f.Random.Int(0, productsId.Count - 1)])
+				.RuleFor(p => p.Quantity, f => f.Random.Int(1, 10));
+
+			var bogusfakesale = new Faker<CreateSaleRequest>()
 				.RuleFor(u => u.SaleNumber, f => f.Commerce.Ean8())
 				.RuleFor(u => u.SaleDate, f => DateTime.UtcNow)
 				.RuleFor(u => u.Customer, f => userNames[f.Random.Int(0, userNames.Count - 1)])
-				.RuleFor(u => u.Category, f => f.Commerce.Categories(1).FirstOrDefault())
-				.RuleFor(u => u.Image, f => "image.jpg");
+				.RuleFor(u => u.Branch, f => f.Company.CompanyName())
+				.RuleFor(u => u.SalesProducts, f => bogusfakeproduct.Generate(f.Random.Int(1, 5)));
 
-			var request = bogusfake.Generate();
-			var command = _mapper.Map<CreateProductCommand>(request);
-			var response = await _mediator.Send(command, cancellationToken);
+			var salerequest = bogusfakesale.Generate(3);
 
-			return Created(string.Empty, new ApiResponseWithData<CreateProductResponse>
+			foreach (var request in salerequest)
+			{
+				var command = _mapper.Map<CreateSaleCommand>(request);
+				var response = await _mediator.Send(command, cancellationToken);
+			}
+
+
+			return Created(string.Empty, new ApiResponseWithData<CreateSaleResponse>
 			{
 				Success = true,
-				Message = "Product created successfully",
-				Data = _mapper.Map<CreateProductResponse>(response)
+				Message = "Sales created successfully"
 			});
 		}
 		catch (Exception ex)

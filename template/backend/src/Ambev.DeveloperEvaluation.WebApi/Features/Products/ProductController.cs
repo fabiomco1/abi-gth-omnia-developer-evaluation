@@ -8,6 +8,8 @@ using Ambev.DeveloperEvaluation.Application.Products.CreateProduct;
 using Ambev.DeveloperEvaluation.WebApi.Features.Product.CreateProduct;
 using static System.Net.Mime.MediaTypeNames;
 using System.Text.Json;
+using Ambev.DeveloperEvaluation.Application.Users.CreateUser;
+using System.Collections.Generic;
 
 namespace Ambev.DeveloperEvaluation.WebApi.Features.Products;
 
@@ -60,15 +62,18 @@ public class ProductsController : BaseController
 				.RuleFor(u => u.Category, f => f.Commerce.Categories(1).FirstOrDefault())
 				.RuleFor(u => u.Image, f => "image.jpg");
 
-			var request = bogusfake.Generate();
-			var command = _mapper.Map<CreateProductCommand>(request);
-			var response = await _mediator.Send(command, cancellationToken);
+			var productrequest = bogusfake.Generate(3);
+
+			foreach (var request in productrequest)
+			{
+				var command = _mapper.Map<CreateProductCommand>(request);
+				var response = await _mediator.Send(command, cancellationToken);
+			}
 
 			return Created(string.Empty, new ApiResponseWithData<CreateProductResponse>
 			{
 				Success = true,
-				Message = "Product created successfully",
-				Data = _mapper.Map<CreateProductResponse>(response)
+				Message = "Product created successfully"
 			});
 		}
 		catch (Exception ex)

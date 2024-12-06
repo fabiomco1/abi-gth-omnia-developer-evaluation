@@ -44,13 +44,17 @@ public class UserRepository : IUserRepository
         return await _context.Users.FirstOrDefaultAsync(o=> o.Id == id, cancellationToken);
     }
 
-    /// <summary>
-    /// Retrieves a user by their email address
-    /// </summary>
-    /// <param name="email">The email address to search for</param>
-    /// <param name="cancellationToken">Cancellation token</param>
-    /// <returns>The user if found, null otherwise</returns>
-    public async Task<User?> GetByEmailAsync(string email, CancellationToken cancellationToken = default)
+	public async Task<List<string>> GetAllUserAsync(CancellationToken cancellationToken = default)
+	{
+		return await _context.Users.Select(u => u.Username).ToListAsync(cancellationToken);
+	}
+	/// <summary>
+	/// Retrieves a user by their email address
+	/// </summary>
+	/// <param name="email">The email address to search for</param>
+	/// <param name="cancellationToken">Cancellation token</param>
+	/// <returns>The user if found, null otherwise</returns>
+	public async Task<User?> GetByEmailAsync(string email, CancellationToken cancellationToken = default)
     {
         return await _context.Users
             .FirstOrDefaultAsync(u => u.Email == email, cancellationToken);

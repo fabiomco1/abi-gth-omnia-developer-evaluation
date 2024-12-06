@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Bogus;
 using Microsoft.AspNetCore.Mvc;
 using AutoMapper;
 using Ambev.DeveloperEvaluation.WebApi.Common;
@@ -8,6 +9,10 @@ using Ambev.DeveloperEvaluation.WebApi.Features.Users.DeleteUser;
 using Ambev.DeveloperEvaluation.Application.Users.CreateUser;
 using Ambev.DeveloperEvaluation.Application.Users.GetUser;
 using Ambev.DeveloperEvaluation.Application.Users.DeleteUser;
+using Ambev.DeveloperEvaluation.Application.Products.CreateProduct;
+using Ambev.DeveloperEvaluation.Domain.Entities;
+using System;
+using Ambev.DeveloperEvaluation.Domain.Enums;
 
 namespace Ambev.DeveloperEvaluation.WebApi.Features.Users;
 
@@ -125,4 +130,58 @@ public class UsersController : BaseController
             Message = "User deleted successfully"
         });
     }
+	[HttpPost("CreatetUserTest")]
+	[ProducesResponseType(typeof(ApiResponseWithData<CreateUserResponse>), StatusCodes.Status201Created)]
+	[ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
+	public async Task<IActionResult> CreateUserTest(CancellationToken cancellationToken)
+	{
+		try
+		{
+			var validStatuses = Enum.GetValues(typeof(UserStatus)).Cast<UserStatus>()
+	            .Where(status => status != UserStatus.Unknown).ToArray();
+
+			var validRoles = Enum.GetValues(typeof(UserRole)).Cast<UserRole>()
+				.Where(role => role != UserRole.None).ToArray();
+
+			var bogusfake = new Faker<CreateUserRequest>()
+                .RuleFor(u => u.Username, f => f.Name.FirstName() + "_" + f.Name.LastName())
+                .RuleFor(u => u.Email,    f => f.Internet.Email())
+            	.RuleFor(u => u.Status,   f => f.PickRandom(validStatuses))
+	            .RuleFor(u => u.Role,     f => f.PickRandom(validRoles))
+				.RuleFor(u => u.Phone,    f =>
+                {
+                    var ddd = f.Random.Number(11, 99);
+                    var prefix = f.Random.Number(90000, 99999);
+                    var suffix = f.Random.Number(1000, 9999);
+                    return $"+55{ddd}{prefix}{suffix}";
+                })
+                .RuleFor(u => u.Password, f =>
+                {
+	                var maiuscula = f.Random.AlphaNumeric(1).ToUpper();
+	                var numeros = f.Random.Number(0, 9).ToString();
+	                var caracterespecial = "#$^*";
+	                var especial = caracterespecial[f.Random.Int(0, caracterespecial.Length - 1)];
+					var minuscula = f.Random.AlphaNumeric(8);
+					return numeros + especial + maiuscula + minuscula;
+                });
+
+			var userRequests = bogusfake.Generate(3);
+
+            foreach (var request in userRequests)
+            {
+                var command = _mapper.Map<CreateUserCommand>(request);
+                var response = await _mediator.Send(command, cancellationToken);
+            }
+
+			return Created(string.Empty, new ApiResponseWithData<CreateUserResponse>
+			{
+				Success = true,
+				Message = "Users created successfully"
+			});
+		}
+		catch (Exception ex)
+		{
+			return StatusCode(500, new { Success = false, Message = "An error occurred while creating the user", Error = ex.Message });
+		}
+	}
 }

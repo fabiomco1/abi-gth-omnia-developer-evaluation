@@ -56,9 +56,5 @@ CREATE TABLE "SalesProducts" (
     CONSTRAINT "FK_SalesProducts_Products" FOREIGN KEY ("ProductId") REFERENCES "Products"("Id") ON DELETE CASCADE -- Chave estrangeira para Products
 );
 
-ALTER TABLE "Products"
-ADD COLUMN "Description" VARCHAR(255),
-ADD COLUMN "Category" VARCHAR(255),
-ADD COLUMN "Image" VARCHAR(255);
 
 
