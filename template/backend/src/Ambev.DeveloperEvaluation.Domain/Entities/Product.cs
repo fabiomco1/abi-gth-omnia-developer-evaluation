@@ -8,12 +8,13 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 using System;
 
 namespace Ambev.DeveloperEvaluation.Domain.Entities;
-
-
 public class Product : BaseEntity, IProduct
 {
 	string IProduct.Id => Id.ToString();
 	public string ProductName { get; set; } = string.Empty;
+	public string Category { get; set; } = string.Empty;
+	public string Description { get; set; } = string.Empty;
+	public string Image { get; set; } = string.Empty;
 	public Decimal Price { get; set; }
 	public DateTime CreatedAt { get; set; }
 	public DateTime? UpdatedAt { get; set; }

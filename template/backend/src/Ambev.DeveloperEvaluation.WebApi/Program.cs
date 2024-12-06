@@ -53,7 +53,6 @@ public class Program
             });
 
             builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
-
 			builder.Services.AddTransient<ISaleRepository, SaleRepository>();
 			builder.Services.AddTransient<IProductRepository, ProductRepository>();
 

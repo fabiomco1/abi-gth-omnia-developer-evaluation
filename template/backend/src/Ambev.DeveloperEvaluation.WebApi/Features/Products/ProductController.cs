@@ -26,12 +26,6 @@ public class ProductsController : BaseController
 	[ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
 	public async Task<IActionResult> CreateProduct([FromBody] CreateProductRequest request, CancellationToken cancellationToken)
 	{
-		var validator = new CreateProductRequestValidator();
-		//var validationResult = await validator.ValidateAsync(request, cancellationToken);
-
-		//	if (!validationResult.IsValid)
-		//		return BadRequest(validationResult.Errors);
-
 		try
 		{
 			var command = _mapper.Map<CreateProductCommand>(request);

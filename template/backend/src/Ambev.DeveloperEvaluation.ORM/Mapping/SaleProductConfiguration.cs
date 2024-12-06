@@ -4,7 +4,6 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System.Text.RegularExpressions;
 
 namespace Ambev.DeveloperEvaluation.ORM.Mapping;
-
 public class SaleProductConfiguration : IEntityTypeConfiguration<SaleProduct>
 {
 	public void Configure(EntityTypeBuilder<SaleProduct> builder)

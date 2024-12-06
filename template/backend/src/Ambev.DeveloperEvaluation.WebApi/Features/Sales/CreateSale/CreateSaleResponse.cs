@@ -4,9 +4,9 @@
 	{
 		public string SaleNumber { get; set; }
 		public decimal TotalSaleAmount { get; set; }
+		public int TotalItems { get; set; }
 		public List<SaleProductResponse> SalesProducts { get; set; }
 	}
-
 	public class SaleProductResponse
 	{
 		public string ProductId { get; set; }

@@ -20,7 +20,15 @@ public class DefaultContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+		modelBuilder.Entity<SaleProduct>()
+	         .HasOne(sp => sp.Sale) 
+	         .WithMany(s => s.SalesProducts) 
+	         .HasForeignKey(sp => sp.SaleNumber)  
+	         .IsRequired();  
+
+		base.OnModelCreating(modelBuilder);
+
+		modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
         base.OnModelCreating(modelBuilder);
     }
 }
