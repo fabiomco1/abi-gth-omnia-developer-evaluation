@@ -1,0 +1,41 @@
+<main class="main">
+  <div class="content">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+      <div class="container-fluid">
+        <a class="navbar-brand" routerLink="/">Vendas Ambev</a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+          aria-controls="navbarNav"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+
+        
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav ms-auto">
+            <li class="nav-item">
+              <a class="nav-link" routerLink="users" routerLinkActive="active">Usuários</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" routerLink="sales" routerLinkActive="active">Vendas</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" routerLink="products" routerLinkActive="active">Produtos</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" routerLink="fabiooliveira" routerLinkActive="active">Fábio Oliveira</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+  </div>
+<router-outlet></router-outlet>
+</main>
+

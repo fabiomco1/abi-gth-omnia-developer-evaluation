@@ -1,0 +1,59 @@
+<h2 class="mb-3">Cadastro de Usuários</h2>
+
+<form (ngSubmit)="cadastrarUsuario()" class="mb-4">
+  <div class="row">
+    <div class="col-md-6 mb-2">
+      <input [(ngModel)]="novoUsuario.username" name="username" class="form-control" placeholder="Usuário" required />
+    </div>
+    <div class="col-md-6 mb-2">
+      <input [(ngModel)]="novoUsuario.password" name="password" type="password" class="form-control" placeholder="Senha" required />
+    </div>
+    <div class="col-md-6 mb-2">
+      <input [(ngModel)]="novoUsuario.phone" name="phone" class="form-control" placeholder="Telefone" />
+    </div>
+    <div class="col-md-6 mb-2">
+      <input [(ngModel)]="novoUsuario.email" name="email" class="form-control" placeholder="E-mail" />
+    </div>
+    <div class="col-md-6 mb-2">
+      <input [(ngModel)]="novoUsuario.status" name="status" type="number" class="form-control" placeholder="Status (ex: 1)" />
+    </div>
+    <div class="col-md-6 mb-2">
+      <input [(ngModel)]="novoUsuario.role" name="role" type="number" class="form-control" placeholder="Cargo (ex: 2)" />
+    </div>
+  </div>
+  <button type="submit" class="btn btn-primary">Cadastrar Usuário</button>
+  <button type="button" class="btn btn-secondary ms-2" (click)="gerarUsuariosFake()">Gerar Usuários Teste</button>
+</form>
+
+<hr />
+
+<h3 class="mb-3">Lista de Usuários</h3>
+<table class="table table-bordered table-striped">
+  <thead class="table-light">
+    <tr>
+      <th>ID</th>
+      <th>Usuário</th>
+      <th>Nome</th>
+      <th>Email</th>
+      <th>Telefone</th>
+      <th>Status</th>
+      <th>Role</th>
+      <th>Ações</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let user of users">
+      <td>{{ user.id }}</td>
+      <td>{{ user.username }}</td>
+      <td>{{ user.name || '—' }}</td>
+      <td>{{ user.email }}</td>
+      <td>{{ user.phone }}</td>
+      <td>{{ user.status }}</td>
+      <td>{{ user.role }}</td>
+      <td>
+        <button class="btn btn-sm btn-outline-danger" (click)="excluirUsuario(user.id)">Excluir</button>
+        <button class="btn btn-sm btn-outline-info ms-1" (click)="verUsuario(user.id)">Ver</button>
+      </td>
+    </tr>
+  </tbody>
+</table>

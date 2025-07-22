@@ -1,18 +1,21 @@
-﻿using MediatR;
-using Bogus;
-using Microsoft.AspNetCore.Mvc;
-using AutoMapper;
+﻿using Ambev.DeveloperEvaluation.Application.Products.CreateProduct;
+using Ambev.DeveloperEvaluation.Application.Sales.ListSales;
+using Ambev.DeveloperEvaluation.Application.Users.CreateUser;
+using Ambev.DeveloperEvaluation.Application.Users.DeleteUser;
+using Ambev.DeveloperEvaluation.Application.Users.GetUser;
+using Ambev.DeveloperEvaluation.Application.Users.ListUsers;
+using Ambev.DeveloperEvaluation.Domain.Entities;
+using Ambev.DeveloperEvaluation.Domain.Enums;
 using Ambev.DeveloperEvaluation.WebApi.Common;
 using Ambev.DeveloperEvaluation.WebApi.Features.Users.CreateUser;
-using Ambev.DeveloperEvaluation.WebApi.Features.Users.GetUser;
 using Ambev.DeveloperEvaluation.WebApi.Features.Users.DeleteUser;
-using Ambev.DeveloperEvaluation.Application.Users.CreateUser;
-using Ambev.DeveloperEvaluation.Application.Users.GetUser;
-using Ambev.DeveloperEvaluation.Application.Users.DeleteUser;
-using Ambev.DeveloperEvaluation.Application.Products.CreateProduct;
-using Ambev.DeveloperEvaluation.Domain.Entities;
+using Ambev.DeveloperEvaluation.WebApi.Features.Users.GetUser;
+using AutoMapper;
+using Bogus;
+using MediatR;
+using Microsoft.AspNetCore.Mvc;
 using System;
-using Ambev.DeveloperEvaluation.Domain.Enums;
+using System.Threading;
 
 namespace Ambev.DeveloperEvaluation.WebApi.Features.Users;
 
@@ -71,14 +74,31 @@ public class UsersController : BaseController
 			return StatusCode(500, new { Success = false, Message = "An error occurred while creating the user", Error = ex.Message });
 		}
 	}
-
-    /// <summary>
-    /// Retrieves a user by their ID
-    /// </summary>
-    /// <param name="id">The unique identifier of the user</param>
-    /// <param name="cancellationToken">Cancellation token</param>
-    /// <returns>The user details if found</returns>
-    [HttpGet("{id}")]
+	[HttpGet("ListAll")]
+	public async Task<IActionResult> ListAllUsers()
+	{
+		try
+		{
+			var result = await _mediator.Send(new ListUsersQuery());
+			return Ok(new { success = true, data = result });
+		}
+		catch (Exception ex)
+		{
+			return BadRequest(new
+			{
+				success = false,
+				message = "An error occurred while listing sales",
+				error = ex.Message
+			});
+		}
+	}
+	/// <summary>
+	/// Retrieves a user by their ID
+	/// </summary>
+	/// <param name="id">The unique identifier of the user</param>
+	/// <param name="cancellationToken">Cancellation token</param>
+	/// <returns>The user details if found</returns>
+	[HttpGet("{id}")]
     [ProducesResponseType(typeof(ApiResponseWithData<GetUserResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]

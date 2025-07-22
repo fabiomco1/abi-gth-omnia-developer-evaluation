@@ -44,6 +44,8 @@ public class Program
 
             builder.Services.AddAutoMapper(typeof(Program).Assembly, typeof(ApplicationLayer).Assembly);
 
+			//builder.WebHost.UseUrls("http://0.0.0.0:8080");
+
 			builder.Services.AddMediatR(cfg =>
             {
                 cfg.RegisterServicesFromAssemblies(
@@ -55,6 +57,24 @@ public class Program
             builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
 			builder.Services.AddTransient<ISaleRepository, SaleRepository>();
 			builder.Services.AddTransient<IProductRepository, ProductRepository>();
+			builder.Services.AddCors(options =>
+			{
+				options.AddPolicy("AllowAngular", policy =>
+				{
+					policy.WithOrigins("http://localhost:4200") 
+						  .AllowAnyHeader()
+						  .AllowAnyMethod();
+				});
+			});
+			builder.Services.AddCors(options =>
+			{
+				options.AddPolicy("AllowFrontend", policy =>
+				{
+					policy.WithOrigins("https://localhost:7181") 
+						  .AllowAnyHeader()
+						  .AllowAnyMethod();
+				});
+			});
 
 			var app = builder.Build();
             app.UseMiddleware<ValidationExceptionMiddleware>();
@@ -65,9 +85,9 @@ public class Program
                 app.UseSwaggerUI();
             }
 
-            app.UseHttpsRedirection();
-
-            app.UseAuthentication();
+           // app.UseHttpsRedirection();
+			app.UseCors("AllowAngular");
+			app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseBasicHealthChecks();

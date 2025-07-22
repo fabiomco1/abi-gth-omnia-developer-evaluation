@@ -27,7 +27,10 @@ public class SaleRepository : ISaleRepository
 		await _context.SaveChangesAsync(cancellationToken);
 		return sale;
 	}
-
+	public async Task<List<Sale>> GetAllAsync(CancellationToken cancellationToken)
+	{
+		return await _context.Sales.ToListAsync(cancellationToken);
+	}
 	public async Task<Sale?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
 	{
 		return await _context.Sales.FirstOrDefaultAsync(o => o.Id == id, cancellationToken);

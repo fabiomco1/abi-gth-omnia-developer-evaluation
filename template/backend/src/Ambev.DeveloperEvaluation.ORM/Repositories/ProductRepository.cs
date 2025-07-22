@@ -43,6 +43,10 @@ public class ProductRepository : IProductRepository
 	{
 		return await _context.Products.FirstOrDefaultAsync(o => o.Id == id, cancellationToken);
 	}
+	public async Task<List<Product>> GetAllAsync(CancellationToken cancellationToken)
+	{
+		return await _context.Products.ToListAsync(cancellationToken);
+	}
 
 	public async Task<List<string>> GetAllProductsAsync(CancellationToken cancellationToken = default)
 	{

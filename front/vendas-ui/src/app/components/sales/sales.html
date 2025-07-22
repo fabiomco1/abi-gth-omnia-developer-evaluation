@@ -1,0 +1,44 @@
+<h2 class="mb-3">Vendas Realizadas</h2>
+
+<div class="mb-3 text-end">
+  <button class="btn btn-success" (click)="gerarVendasFake()">
+    + Realizar Teste de Venda
+  </button>
+</div>
+
+<table class="table table-bordered table-striped">
+  <thead class="table-light">
+    <tr>
+      <th>ID</th>
+      <th>Número</th>
+      <th>Data</th>
+      <th>Cliente</th>
+      <th>Total (R$)</th>
+      <th>Itens</th>
+      <th>Filial</th>
+      <th>Cancelada?</th>
+      <th>Data Criação</th>
+      <th>Atualizada</th>
+      <th>Cancelada Em</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let venda of sales">
+      <td>{{ venda.id }}</td>
+      <td>{{ venda.saleNumber }}</td>
+      <td>{{ venda.saleDate | date:'shortDate' }}</td>
+      <td>{{ venda.customer }}</td>
+      <td>{{ venda.totalSaleAmount | number:'1.2-2' }}</td>
+      <td>{{ venda.totalItems || venda.salesProducts?.length }}</td>
+      <td>{{ venda.branch }}</td>
+      <td>
+        <span [class.text-danger]="venda.cancelled"> 
+          {{ venda.cancelled ? 'Sim' : 'Não' }}
+        </span>
+      </td>
+      <td>{{ venda.createdAt | date:'short' }}</td>
+      <td>{{ venda.updatedAt || '—' }}</td>
+      <td>{{ venda.cancelledAt || '—' }}</td>
+    </tr>
+  </tbody>
+</table>

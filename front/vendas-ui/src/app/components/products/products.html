@@ -1,0 +1,77 @@
+<h2 class="mb-4">Lista de Produtos</h2>
+
+<div class="mb-3 text-end">
+  <button class="btn btn-success" (click)="exibirFormulario = true">
+    + Adicionar Produto
+  </button>
+</div>
+
+<!-- Grid de cards -->
+<div class="row">
+  <div class="col-md-4 mb-4" *ngFor="let p of produtosPaginados">
+    <div class="card h-100 shadow-sm">
+      <img
+        [src]="p.image.startsWith('data:image') ? p.image : 'assets/placeholder.jpg'"
+        class="card-img-top"
+        alt="{{ p.productName }}"
+        style="max-height: 100px; object-fit: contain;"
+      />
+      <div class="card-body">
+        <h5 class="card-title">{{ p.productName }}</h5>
+        <p class="card-text">{{ p.description }}</p>
+        <p class="card-text text-muted">Categoria: {{ p.category }}</p>
+        <p class="fw-bold text-primary">R$ {{ p.price }}</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Paginação -->
+<nav *ngIf="products.length > itemsPorPagina">
+  <ul class="pagination justify-content-center">
+    <li class="page-item" [class.disabled]="paginaAtual === 1">
+      <button class="page-link" (click)="trocarPagina(paginaAtual - 1)">
+        Anterior
+      </button>
+    </li>
+    <li class="page-item" [class.disabled]="paginaAtual * itemsPorPagina >= products.length">
+      <button class="page-link" (click)="trocarPagina(paginaAtual + 1)">
+        Próxima
+      </button>
+    </li>
+  </ul>
+</nav>
+
+<!-- Formulário -->
+<div *ngIf="exibirFormulario" class="mt-4">
+  <h3>Novo Produto</h3>
+  <form (ngSubmit)="salvarProduto()" #productForm="ngForm">
+    <div class="mb-2">
+      <input class="form-control" name="productName" [(ngModel)]="novoProduto.productName" placeholder="Nome do produto" required />
+    </div>
+
+    <div class="mb-2">
+      <input class="form-control" name="price" [(ngModel)]="novoProduto.price" placeholder="Preço" type="number" required />
+    </div>
+
+    <div class="mb-2">
+      <input class="form-control" name="category" [(ngModel)]="novoProduto.category" placeholder="Categoria" required />
+    </div>
+
+    <div class="mb-2">
+      <label for="imageUpload" class="form-label">Selecionar imagem</label>
+      <input type="file" class="form-control" id="imageUpload" (change)="selecionarImagem($event)" accept="image/*" />
+    </div>
+
+    <div *ngIf="novoProduto.image" class="mt-2">
+      <img [src]="novoProduto.image" alt="Prévia da imagem" class="img-thumbnail" style="max-width: 200px;" />
+    </div>
+
+    <div class="mb-2">
+      <textarea class="form-control" name="description" [(ngModel)]="novoProduto.description" placeholder="Descrição"></textarea>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Salvar</button>
+    <button type="button" class="btn btn-secondary ms-2" (click)="exibirFormulario = false">Cancelar</button>
+  </form>
+</div>

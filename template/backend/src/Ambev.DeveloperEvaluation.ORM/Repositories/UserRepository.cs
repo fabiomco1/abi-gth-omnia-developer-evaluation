@@ -43,7 +43,10 @@ public class UserRepository : IUserRepository
     {
         return await _context.Users.FirstOrDefaultAsync(o=> o.Id == id, cancellationToken);
     }
-
+	public async Task<List<User>> GetAllAsync(CancellationToken cancellationToken)
+	{
+		return await _context.Users.ToListAsync(cancellationToken);
+	}
 	public async Task<List<string>> GetAllUserAsync(CancellationToken cancellationToken = default)
 	{
 		return await _context.Users.Select(u => u.Username).ToListAsync(cancellationToken);

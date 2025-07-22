@@ -29,6 +29,7 @@ public interface IUserRepository
 	/// <param name="email">The email address to search for</param>
 	/// <param name="cancellationToken">Cancellation token</param>
 	/// <returns>The user if found, null otherwise</returns>
+    Task<List<User>> GetAllAsync(CancellationToken cancellationToken = default);
 	Task<User?> GetByEmailAsync(string email, CancellationToken cancellationToken = default);
 
     /// <summary>

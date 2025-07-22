@@ -13,6 +13,7 @@ using Ambev.DeveloperEvaluation.WebApi.Features.SalesProducts.CreateSaleProduct;
 using Ambev.DeveloperEvaluation.Application.Products.CreateProduct;
 using Bogus;
 using Ambev.DeveloperEvaluation.Application.Users.CreateUser;
+using Ambev.DeveloperEvaluation.Application.Sales.ListSales;
 
 namespace Ambev.DeveloperEvaluation.WebApi.Features.Sales;
 
@@ -108,6 +109,25 @@ public class SalesController : BaseController
 			Message = "Sale Cancelled successfully",
 			Data = _mapper.Map<CancelSaleResponse>(response)
 		});
+	}
+
+	[HttpGet("ListAll")]
+	public async Task<IActionResult> ListAllSales()
+	{
+		try
+		{
+			var result = await _mediator.Send(new ListSalesQuery());
+			return Ok(new { success = true, data = result });
+		}
+		catch (Exception ex)
+		{
+			return BadRequest(new
+			{
+				success = false,
+				message = "An error occurred while listing sales",
+				error = ex.Message
+			});
+		}
 	}
 
 	[HttpPost("CreateSaleTest")]

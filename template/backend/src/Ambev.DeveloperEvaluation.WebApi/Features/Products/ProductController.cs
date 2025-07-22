@@ -10,6 +10,7 @@ using static System.Net.Mime.MediaTypeNames;
 using System.Text.Json;
 using Ambev.DeveloperEvaluation.Application.Users.CreateUser;
 using System.Collections.Generic;
+using Ambev.DeveloperEvaluation.Application.Products.GetProduct;
 
 namespace Ambev.DeveloperEvaluation.WebApi.Features.Products;
 
@@ -48,6 +49,26 @@ public class ProductsController : BaseController
 			return StatusCode(500, new { Success = false, Message = "An error occurred while creating the Product", Error = ex.Message });
 		}
 	}
+
+	[HttpGet("ListAll")]
+	public async Task<IActionResult> ListAllProducts()
+	{
+		try
+		{
+			var result = await _mediator.Send(new ListProductsQuery());
+			return Ok(new { success = true, data = result });
+		}
+		catch (Exception ex)
+		{
+			return BadRequest(new
+			{
+				success = false,
+				message = "An error occurred while listing products",
+				error = ex.Message
+			});
+		}
+	}
+
 	[HttpPost("ProductCreateTest")]
 	[ProducesResponseType(typeof(ApiResponseWithData<CreateProductResponse>), StatusCodes.Status201Created)]
 	[ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]

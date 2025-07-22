@@ -35,11 +35,11 @@ CREATE TABLE "Products" (
     "Id"  UUID PRIMARY KEY DEFAULT gen_random_uuid(),                  -- Identificador único do produto
     "ProductName" VARCHAR(255) NOT NULL,              -- Nome do produto	
 	"Description" VARCHAR(255) NOT NULL,              -- Descricao do produto	
-	"Category" VARCHAR(255) NOT NULL,              -- Descricao do produto	
-	"Image" VARCHAR(255) ,              -- Descricao do produto		
-    "Price" DECIMAL(10, 2) NOT NULL,               -- Preço unitário do produto
+	"Category" VARCHAR(255) NOT NULL,              	  -- Descricao do produto	
+	"Image" VARCHAR(MAX) ,              			  -- Descricao do produto		
+    "Price" DECIMAL(10, 2) NOT NULL,                  -- Preço unitário do produto
 	"CreatedAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,  -- Data de criação
-    "UpdatedAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP  -- Data de atualização
+    "UpdatedAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP   -- Data de atualização
 );
 
 
